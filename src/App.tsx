@@ -3,7 +3,7 @@ import { Message, LLMProvider, ChatConfig } from './types';
 import ConfigPanel from './components/ConfigPanel';
 import ChatInterface from './components/ChatInterface';
 import { createApiClient } from './utils/apiClient';
-import { Settings, MessageSquare } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -136,7 +136,11 @@ function App() {
               <Settings className="w-5 h-5 text-teal-400" />
             </button>
             <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              <MessageSquare className="w-6 h-6 text-teal-400" />
+              <img 
+                src="/logo_unchained_labs.png" 
+                alt="Unchained Labs" 
+                className="w-6 h-6"
+              />
               Chatbox Sandbox
             </h1>
           </div>
@@ -180,7 +184,14 @@ function App() {
       <footer className="flex-shrink-0 bg-dark-blue-900 border-t border-dark-blue-700 p-3">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-4">
-            <span>Chatbox Sandbox v1.0.0</span>
+            <div className="flex items-center gap-2">
+              <img 
+                src="/logo_unchained_labs.png" 
+                alt="Unchained Labs" 
+                className="w-4 h-4"
+              />
+              <span>Chatbox Sandbox v1.0.0</span>
+            </div>
             <span>•</span>
             <span>Configure your LLM providers and start chatting</span>
           </div>
