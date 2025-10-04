@@ -1,5 +1,9 @@
 # Chatbox Sandbox
 
+[![CI](https://github.com/Unchained-Labs/chatbox-sandbox/workflows/CI/badge.svg)](https://github.com/Unchained-Labs/chatbox-sandbox/actions)
+[![codecov](https://codecov.io/gh/Unchained-Labs/chatbox-sandbox/branch/main/graph/badge.svg)](https://codecov.io/gh/Unchained-Labs/chatbox-sandbox)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern, configurable chatbot sandbox environment built with React, TypeScript, Vite, and TailwindCSS. This application allows you to easily connect to various LLM providers and test different chatbot configurations.
 
 ## Features
