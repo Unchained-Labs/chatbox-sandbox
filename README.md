@@ -95,13 +95,74 @@ src/
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for detailed information on how to get started.
+
+### Quick Start for Contributors
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/your-username/chatbox-sandbox.git
+   cd chatbox-sandbox
+   ```
+3. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+4. **Create a feature branch**:
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+5. **Make your changes** and test them:
+   ```bash
+   npm run test:ci
+   ```
+6. **Submit a pull request**
+
+### Development Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run test` - Run tests in watch mode
+- `npm run test:run` - Run tests once
+- `npm run test:coverage` - Run tests with coverage
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint issues
+- `npm run format` - Format code with Prettier
+- `npm run type-check` - Run TypeScript type checking
+- `npm run test:ci` - Run all CI checks
+
+### Code Quality
+
+This project maintains high code quality standards:
+
+- **TypeScript** for type safety
+- **ESLint** for code quality
+- **Prettier** for code formatting
+- **Vitest** for testing
+- **GitHub Actions** for CI/CD
+
+## Security
+
+For security-related issues, please see our [Security Policy](SECURITY.md).
+
+**Important**: This is a client-side only application. All data (including API keys) is stored locally in your browser and never sent to our servers.
+
+## Code of Conduct
+
+This project follows a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold this code.
 
 ## License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built with [React](https://reactjs.org/)
+- Styled with [TailwindCSS](https://tailwindcss.com/)
+- Bundled with [Vite](https://vitejs.dev/)
+- Tested with [Vitest](https://vitest.dev/)
+
+---
+
 A configurable sandbox environment for plugging a chatbot UI into any API

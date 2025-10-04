@@ -67,3 +67,5 @@ credentials/
 *.tmp
 *.temp
 .cache/
+
+package-lock.json
