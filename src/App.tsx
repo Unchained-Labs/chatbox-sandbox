@@ -136,10 +136,10 @@ function App() {
               <Settings className="w-5 h-5 text-teal-400" />
             </button>
             <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              <img 
-                src="/logo_unchained_labs.png" 
-                alt="Unchained Labs" 
-                className="w-6 h-6"
+              <img
+                src="/logo_unchained_labs.png"
+                alt="Unchained Labs"
+                className="w-9 h-9"
               />
               Chatbox Sandbox
             </h1>
@@ -185,9 +185,9 @@ function App() {
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <img 
-                src="/logo_unchained_labs.png" 
-                alt="Unchained Labs" 
+              <img
+                src="/logo_unchained_labs.png"
+                alt="Unchained Labs"
                 className="w-4 h-4"
               />
               <span>Chatbox Sandbox v1.0.0</span>
