@@ -19,7 +19,7 @@ We take security bugs seriously. We appreciate your efforts to responsibly discl
 
 Instead, please report them via one of the following methods:
 
-1. **Email**: Send details to [security@unchainedlabs.com](mailto:security@unchainedlabs.com)
+1. **Email**: Send details to [rangonomics@gmail.com](mailto:rangonomics@gmail.com)
 2. **GitHub Security Advisories**: Use GitHub's private vulnerability reporting feature
 3. **Discord**: Contact project maintainers in our private Discord channel
 
@@ -136,7 +136,7 @@ This is a **client-side only** application that runs entirely in the browser. Ke
 
 For security-related questions or concerns:
 
-- **Email**: [security@unchainedlabs.com](mailto:security@unchainedlabs.com)
+- **Email**: [rangonomics@gmail.com](mailto:rangonomics@gmail.com)
 - **GitHub**: Use private vulnerability reporting
 - **Discord**: Contact project maintainers
 

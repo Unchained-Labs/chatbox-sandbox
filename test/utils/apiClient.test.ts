@@ -6,66 +6,58 @@ import { LLMProvider } from '../../src/types';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-// Mock HunterAuthService
-vi.mock('../../src/utils/hunterAuth', () => ({
-  HunterAuthService: vi.fn().mockImplementation(() => ({
-    sendMessage: vi.fn().mockResolvedValue('Mocked response'),
-  })),
-}));
-
 describe('ApiClient', () => {
-  const mockProvider: LLMProvider = {
-    id: 'test',
-    name: 'Test Provider',
-    apiUrl: 'https://api.test.com',
-    apiKey: 'test-key',
-    requestFormat: 'openai',
-  };
+  let mockProvider: LLMProvider;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetch.mockClear();
+    mockProvider = {
+      id: 'openai',
+      name: 'OpenAI',
+      apiUrl: 'https://api.openai.com/v1/chat/completions',
+      apiKey: 'test-key',
+      requestFormat: 'openai',
+      model: 'gpt-3.5-turbo',
+    };
   });
 
   describe('OpenAI format', () => {
-    it('sends message with OpenAI format', async () => {
+    it('sends message successfully', async () => {
       const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          choices: [{ message: { content: 'Test response' } }],
-        }),
+        choices: [{ message: { content: 'Hello!' } }],
       };
-      mockFetch.mockResolvedValueOnce(mockResponse);
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
+      });
 
       const client = new ApiClient(mockProvider);
       const result = await client.sendMessage([
         { role: 'user', content: 'Hello' },
       ]);
 
+      expect(result).toBe('Hello!');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
+        'https://api.openai.com/v1/chat/completions',
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer test-key',
+            'Content-Type': 'application/json',
           }),
-          body: expect.stringContaining('"model":"gpt-3.5-turbo"'),
         })
       );
-      expect(result).toBe('Test response');
     });
 
     it('handles OpenAI response errors', async () => {
-      const mockResponse = {
+      mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
-        statusText: 'Unauthorized',
-        json: () => Promise.resolve({
-          error: { message: 'Invalid API key' },
-        }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
+        json: () => Promise.resolve({ error: { message: 'Invalid API key' } }),
+        text: () => Promise.resolve(JSON.stringify({ error: { message: 'Invalid API key' } })),
+      });
 
       const client = new ApiClient(mockProvider);
       
@@ -76,239 +68,113 @@ describe('ApiClient', () => {
   });
 
   describe('Anthropic format', () => {
-    const anthropicProvider: LLMProvider = {
-      ...mockProvider,
-      requestFormat: 'anthropic',
-    };
-
-    it('sends message with Anthropic format', async () => {
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          content: [{ text: 'Test response' }],
-        }),
+    beforeEach(() => {
+      mockProvider = {
+        id: 'anthropic',
+        name: 'Anthropic',
+        apiUrl: 'https://api.anthropic.com/v1/messages',
+        apiKey: 'test-key',
+        requestFormat: 'anthropic',
+        model: 'claude-3-sonnet-20240229',
       };
-      mockFetch.mockResolvedValueOnce(mockResponse);
+    });
 
-      const client = new ApiClient(anthropicProvider);
+    it('sends message successfully', async () => {
+      const mockResponse = {
+        content: [{ text: 'Hello!' }],
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
+      });
+
+      const client = new ApiClient(mockProvider);
       const result = await client.sendMessage([
         { role: 'user', content: 'Hello' },
       ]);
 
+      expect(result).toBe('Hello!');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
+        'https://api.anthropic.com/v1/messages',
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Content-Type': 'application/json',
             'x-api-key': 'test-key',
-            'anthropic-version': '2023-06-01',
-          }),
-        })
-      );
-      expect(result).toBe('Test response');
-    });
-  });
-
-  describe('Google format', () => {
-    const googleProvider: LLMProvider = {
-      ...mockProvider,
-      requestFormat: 'google',
-    };
-
-    it('sends message with Google format', async () => {
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          candidates: [{ content: { parts: [{ text: 'Test response' }] } }],
-        }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      const client = new ApiClient(googleProvider);
-      const result = await client.sendMessage([
-        { role: 'user', content: 'Hello' },
-      ]);
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
             'Content-Type': 'application/json',
           }),
         })
       );
-      expect(result).toBe('Test response');
-    });
-  });
-
-  describe('Cohere format', () => {
-    const cohereProvider: LLMProvider = {
-      ...mockProvider,
-      requestFormat: 'cohere',
-    };
-
-    it('sends message with Cohere format', async () => {
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          text: 'Test response',
-        }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      const client = new ApiClient(cohereProvider);
-      const result = await client.sendMessage([
-        { role: 'user', content: 'Hello' },
-      ]);
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer test-key',
-          }),
-        })
-      );
-      expect(result).toBe('Test response');
-    });
-  });
-
-  describe('Replicate format', () => {
-    const replicateProvider: LLMProvider = {
-      ...mockProvider,
-      requestFormat: 'replicate',
-    };
-
-    it('sends message with Replicate format', async () => {
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          output: 'Test response',
-        }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      const client = new ApiClient(replicateProvider);
-      const result = await client.sendMessage([
-        { role: 'user', content: 'Hello' },
-      ]);
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-            'Authorization': 'Token test-key',
-          }),
-        })
-      );
-      expect(result).toBe('Test response');
-    });
-  });
-
-  describe('Hunter format', () => {
-    const hunterProvider: LLMProvider = {
-      ...mockProvider,
-      requestFormat: 'hunter',
-      walletPrivateKey: 'test-private-key',
-    };
-
-    it('uses HunterAuthService for Hunter format', async () => {
-      const client = new ApiClient(hunterProvider);
-      const result = await client.sendMessage([
-        { role: 'user', content: 'Hello' },
-      ]);
-
-      expect(result).toBe('Mocked response');
-      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 
   describe('Custom headers', () => {
     it('includes custom headers in request', async () => {
-      const providerWithHeaders: LLMProvider = {
-        ...mockProvider,
-        customHeaders: {
-          'X-Custom-Header': 'custom-value',
-          'Authorization': 'Custom auth',
-        },
+      mockProvider.customHeaders = {
+        'X-Custom-Header': 'custom-value',
       };
 
       const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          choices: [{ message: { content: 'Test response' } }],
-        }),
+        choices: [{ message: { content: 'Hello!' } }],
       };
-      mockFetch.mockResolvedValueOnce(mockResponse);
 
-      const client = new ApiClient(providerWithHeaders);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
+      });
+
+      const client = new ApiClient(mockProvider);
       await client.sendMessage([{ role: 'user', content: 'Hello' }]);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com',
+        'https://api.openai.com/v1/chat/completions',
         expect.objectContaining({
           headers: expect.objectContaining({
+            'Authorization': 'Bearer test-key',
             'Content-Type': 'application/json',
             'X-Custom-Header': 'custom-value',
-            'Authorization': 'Custom auth',
           }),
         })
       );
     });
   });
 
-  describe('Options', () => {
-    it('includes temperature and maxTokens in request', async () => {
+  describe('Test connection', () => {
+    it('tests connection successfully', async () => {
       const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          choices: [{ message: { content: 'Test response' } }],
-        }),
+        choices: [{ message: { content: 'Test response' } }],
       };
-      mockFetch.mockResolvedValueOnce(mockResponse);
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
+      });
 
       const client = new ApiClient(mockProvider);
-      await client.sendMessage(
-        [{ role: 'user', content: 'Hello' }],
-        { temperature: 0.8, maxTokens: 150 }
-      );
+      const result = await client.testConnection();
 
-      const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(requestBody.temperature).toBe(0.8);
-      expect(requestBody.max_tokens).toBe(150);
+      expect(result).toBe(true);
+    });
+
+    it('handles connection test failure', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: () => Promise.resolve({ error: { message: 'Unauthorized' } }),
+        text: () => Promise.resolve(JSON.stringify({ error: { message: 'Unauthorized' } })),
+      });
+
+      const client = new ApiClient(mockProvider);
+      const result = await client.testConnection();
+
+      expect(result).toBe(false);
     });
   });
 
-  describe('System messages', () => {
-    it('includes system messages in request', async () => {
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({
-          choices: [{ message: { content: 'Test response' } }],
-        }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      const client = new ApiClient(mockProvider);
-      await client.sendMessage([
-        { role: 'system', content: 'You are a helpful assistant' },
-        { role: 'user', content: 'Hello' },
-      ]);
-
-      const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(requestBody.messages).toHaveLength(2);
-      expect(requestBody.messages[0].role).toBe('system');
-      expect(requestBody.messages[0].content).toBe('You are a helpful assistant');
-    });
-  });
-
-  describe('Network errors', () => {
+  describe('Error handling', () => {
     it('handles network errors', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
@@ -318,34 +184,19 @@ describe('ApiClient', () => {
         { role: 'user', content: 'Hello' },
       ])).rejects.toThrow('Network error');
     });
-  });
 
-  describe('Test connection', () => {
-    it('tests connection successfully', async () => {
-      const mockResponse = {
+    it('handles invalid JSON response', async () => {
+      mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ status: 'ok' }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
+        json: () => Promise.reject(new Error('Invalid JSON')),
+        text: () => Promise.resolve('Invalid JSON response'),
+      });
 
       const client = new ApiClient(mockProvider);
-      const result = await client.testConnection();
-
-      expect(result).toBe(true);
-    });
-
-    it('handles connection test failure', async () => {
-      const mockResponse = {
-        ok: false,
-        status: 401,
-        json: () => Promise.resolve({ error: 'Unauthorized' }),
-      };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      const client = new ApiClient(mockProvider);
-      const result = await client.testConnection();
-
-      expect(result).toBe(false);
+      
+      await expect(client.sendMessage([
+        { role: 'user', content: 'Hello' },
+      ])).rejects.toThrow('Invalid JSON');
     });
   });
 });

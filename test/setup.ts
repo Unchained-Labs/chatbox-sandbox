@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: vi.fn(),
+  getItem: vi.fn(() => null),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
@@ -23,16 +23,14 @@ Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
 });
 
-// Mock window.alert
+// Mock window methods
 window.alert = vi.fn();
-
-// Mock window.confirm
 window.confirm = vi.fn();
 
 // Mock scrollIntoView
 Element.prototype.scrollIntoView = vi.fn();
 
-// Mock console methods to reduce noise in tests
+// Mock console to reduce noise
 global.console = {
   ...console,
   log: vi.fn(),
